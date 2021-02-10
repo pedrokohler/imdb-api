@@ -117,9 +117,6 @@ describe("USER CONTROLLER", () => {
     });
 
     it("Should return 404 status if user is not found", async () => {
-      // just so that cleatDatabase() doesn't throw an error
-      await request(app).post("/user").send(createRequestBody());
-
       const body = { name: "Pedro" };
       const result = await request(app).patch(`/user/fakeId`).send(body);
       expect(result.status).toBe(404);
@@ -138,9 +135,6 @@ describe("USER CONTROLLER", () => {
     });
 
     it("Should return 404 status if user is not found", async () => {
-      // just so that cleatDatabase() doesn't throw an error
-      await request(app).post("/user").send(createRequestBody());
-
       const result = await request(app).delete(`/user/fakeId`);
       expect(result.status).toBe(404);
       expect(result.body).toEqual(messageCodeMap.get(404));

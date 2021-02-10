@@ -27,7 +27,7 @@ const clearDatabase = async () => {
   const dropPromises = modelNames.map((model) =>
     mongoose.model(model).collection.drop()
   );
-  await Promise.all(dropPromises);
+  await Promise.allSettled(dropPromises);
 };
 
 export default {
