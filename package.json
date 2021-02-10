@@ -1,0 +1,23 @@
+{
+  "name": "imdb-ioasys-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://kohler1000@bitbucket.org/kohler1000/imdb-ioasys-api.git",
+  "author": "Pedro Kohler <pedrokohlerbh@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^7.19.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "nodemon": "^2.0.7",
+    "sucrase": "^3.17.1"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "build": "sucrase ./src -d ./dist --transforms imports",
+    "serve": "node dist/index.js"
+  }
+}
