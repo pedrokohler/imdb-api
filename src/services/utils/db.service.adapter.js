@@ -15,11 +15,14 @@ class DbServiceAdapter {
   }
 
   async update(id, patch) {
-    const document = await this.find(id);
-    Object.keys(patch).forEach((key) => {
-      document[key] = patch[key];
-    });
-    await document.save();
+    const options = {
+      new: true,
+    };
+    const document = await this.Model.findOneAndUpdate(
+      { _id: id },
+      patch,
+      options
+    );
     return document;
   }
 

@@ -49,6 +49,18 @@ UserSchema.pre("validate", async function validate(next) {
   next();
 });
 
+UserSchema.pre("findOneAndUpdate", async function validate(next) {
+  const updates = this.getUpdate();
+
+  if (Object.prototype.hasOwnProperty.call(updates, "password")) {
+    // eslint-disable-next-line no-underscore-dangle
+    this._update.password = await UserSchema.methods.encryptPassword(
+      updates.password
+    );
+  }
+  next();
+});
+
 const User = model("User", UserSchema);
 
 export default User;
