@@ -51,4 +51,8 @@ describe("USER MODEL", () => {
     const isValidPassword = await user.comparePassword(defaultPassword);
     expect(isValidPassword).toBe(true);
   });
+
+  it("Should be activated on creation", () => {
+    expect(user).toHaveProperty("isActive", true);
+  });
 });

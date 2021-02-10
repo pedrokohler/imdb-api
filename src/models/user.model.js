@@ -19,6 +19,11 @@ const UserSchema = new Schema({
     type: Boolean,
     required: true,
   },
+  isActive: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
 });
 
 UserSchema.method(
