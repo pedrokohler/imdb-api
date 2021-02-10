@@ -30,7 +30,7 @@
   },
   "scripts": {
     "start": "nodemon src/index.js",
-    "build": "sucrase ./src -d ./dist --transforms imports",
+    "build": "rm -rf ./dist && sucrase ./src -d ./dist --exclude-dirs tests --transforms imports ",
     "serve": "node dist/index.js",
     "postinstall": "husky install",
     "test": "jest"
