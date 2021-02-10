@@ -6,7 +6,7 @@ import {
   defaultDirector,
   defaultGenders,
   defaultActors,
-} from "../helpers/movie.payload.factory";
+} from "../test-helpers/movie.payload.factory";
 
 describe("MOVIE MODEL", () => {
   it("Should create a correct document", () => {

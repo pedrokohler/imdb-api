@@ -5,7 +5,7 @@ import {
   defaultPassword,
   defaultIsAdmin,
   createUserPayload,
-} from "../helpers/user.payload.factory";
+} from "../test-helpers/user.payload.factory";
 
 let user;
 

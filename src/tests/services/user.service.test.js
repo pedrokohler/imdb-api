@@ -1,9 +1,9 @@
-import dbHandler from "../helpers/db.handler";
+import dbHandler from "../test-helpers/db.handler";
 import UserService from "../../services/user.service";
 import {
   defaultPassword,
   createUserPayload,
-} from "../helpers/user.payload.factory";
+} from "../test-helpers/user.payload.factory";
 
 beforeAll(async () => {
   await dbHandler.connect();

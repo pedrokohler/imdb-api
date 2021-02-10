@@ -1,12 +1,12 @@
 import request from "supertest";
 import UserService from "../../services/user.service";
-import dbHandler from "../helpers/db.handler";
+import dbHandler from "../test-helpers/db.handler";
 import app from "../../app";
 import messageCodeMap from "../../controllers/utils/message.codes";
 import {
   createUserPayload,
   createUserPayloadWithoutPassword,
-} from "../helpers/user.payload.factory";
+} from "../test-helpers/user.payload.factory";
 
 beforeAll(async () => {
   await dbHandler.connect();

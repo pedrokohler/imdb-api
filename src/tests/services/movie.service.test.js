@@ -1,6 +1,6 @@
-import dbHandler from "../helpers/db.handler";
+import dbHandler from "../test-helpers/db.handler";
 import MovieService from "../../services/movie.service";
-import { createMoviePayload } from "../helpers/movie.payload.factory";
+import { createMoviePayload } from "../test-helpers/movie.payload.factory";
 
 beforeAll(async () => {
   await dbHandler.connect();

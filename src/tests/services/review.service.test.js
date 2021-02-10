@@ -1,9 +1,9 @@
-import dbHandler from "../helpers/db.handler";
+import dbHandler from "../test-helpers/db.handler";
 import ReviewService from "../../services/review.service";
 import {
   createReviewPayload,
   generateRandomId,
-} from "../helpers/review.payload.factory";
+} from "../test-helpers/review.payload.factory";
 
 beforeAll(async () => {
   await dbHandler.connect();

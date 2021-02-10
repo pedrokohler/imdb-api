@@ -2,7 +2,7 @@ import Review from "../../models/review.model";
 import {
   defaultId,
   createReviewPayload,
-} from "../helpers/review.payload.factory";
+} from "../test-helpers/review.payload.factory";
 
 const createReview = (rating) => new Review(createReviewPayload({ rating }));
 

@@ -1,13 +1,13 @@
 import request from "supertest";
 import app from "../../app";
 import MovieService from "../../services/movie.service";
-import dbHandler from "../helpers/db.handler";
+import dbHandler from "../test-helpers/db.handler";
 import messageCodeMap from "../../controllers/utils/message.codes";
-import { createMoviePayload } from "../helpers/movie.payload.factory";
+import { createMoviePayload } from "../test-helpers/movie.payload.factory";
 import {
   createValidAdminToken,
   createValidRegularUserToken,
-} from "../helpers/token.factory";
+} from "../test-helpers/token.factory";
 
 beforeAll(async () => {
   await dbHandler.connect();
