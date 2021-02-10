@@ -1,6 +1,9 @@
-import { Types } from "mongoose";
 import dbHandler from "../helpers/db.handler";
 import ReviewService from "../../services/review.service";
+import {
+  createReviewPayload,
+  generateRandomId,
+} from "../helpers/review.payload.factory";
 
 beforeAll(async () => {
   await dbHandler.connect();
@@ -12,16 +15,8 @@ afterAll(async () => {
   await dbHandler.closeDatabase();
 });
 
-const defaultId = Types.ObjectId();
-const defaultRating = 3;
-
 const addReview = async (customizedPayload) => {
-  await ReviewService.create({
-    reviewedItemId: defaultId,
-    reviewerId: defaultId,
-    rating: defaultRating,
-    ...customizedPayload,
-  });
+  await ReviewService.create(createReviewPayload(customizedPayload));
 };
 
 describe("REVIEW SERVICE", () => {
@@ -34,7 +29,7 @@ describe("REVIEW SERVICE", () => {
     }
   });
   it("Should retrieve all reviews for a given movie ID", async () => {
-    const otherId = Types.ObjectId();
+    const otherId = generateRandomId();
     await addReview({});
     await addReview({ reviewedItemId: otherId });
     await addReview({});

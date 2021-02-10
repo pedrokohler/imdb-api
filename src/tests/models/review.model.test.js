@@ -1,21 +1,17 @@
-import { Types } from "mongoose";
 import Review from "../../models/review.model";
+import {
+  defaultId,
+  createReviewPayload,
+} from "../helpers/review.payload.factory";
 
-const fakeId = Types.ObjectId();
-
-const createReview = (rating) =>
-  new Review({
-    reviewedItemId: fakeId,
-    reviewerId: fakeId,
-    rating,
-  });
+const createReview = (rating) => new Review(createReviewPayload({ rating }));
 
 describe("REVIEW MODEL", () => {
   it("Should create a review", () => {
     const review = createReview(3);
 
-    expect(review).toHaveProperty("reviewedItemId", fakeId);
-    expect(review).toHaveProperty("reviewerId", fakeId);
+    expect(review).toHaveProperty("reviewedItemId", defaultId);
+    expect(review).toHaveProperty("reviewerId", defaultId);
     expect(review).toHaveProperty("rating", 3);
   });
 
