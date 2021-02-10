@@ -3,12 +3,12 @@ import { model, Schema, Types } from "mongoose";
 const clamp = (number, min, max) => Math.min(Math.max(number, min), max);
 
 const ReviewSchema = new Schema({
-  movieId: {
+  reviewedItemId: {
     type: Types.ObjectId,
     ref: "Movie",
     required: true,
   },
-  userId: {
+  reviewerId: {
     type: Types.ObjectId,
     ref: "User",
     required: true,

@@ -17,8 +17,8 @@ const defaultRating = 3;
 
 const addReview = async (customizedPayload) => {
   await ReviewService.create({
-    movieId: defaultId,
-    userId: defaultId,
+    reviewedItemId: defaultId,
+    reviewerId: defaultId,
     rating: defaultRating,
     ...customizedPayload,
   });
@@ -36,11 +36,11 @@ describe("REVIEW SERVICE", () => {
   it("Should retrieve all reviews for a given movie ID", async () => {
     const otherId = Types.ObjectId();
     await addReview({});
-    await addReview({ movieId: otherId });
+    await addReview({ reviewedItemId: otherId });
     await addReview({});
-    await addReview({ movieId: otherId });
+    await addReview({ reviewedItemId: otherId });
 
-    const reviews = await ReviewService.list({ movieId: otherId });
+    const reviews = await ReviewService.list({ reviewedItemId: otherId });
     expect(reviews).toHaveLength(2);
   });
 });

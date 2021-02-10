@@ -5,8 +5,8 @@ const fakeId = Types.ObjectId();
 
 const createReview = (rating) =>
   new Review({
-    movieId: fakeId,
-    userId: fakeId,
+    reviewedItemId: fakeId,
+    reviewerId: fakeId,
     rating,
   });
 
@@ -14,8 +14,8 @@ describe("REVIEW MODEL", () => {
   it("Should create a review", () => {
     const review = createReview(3);
 
-    expect(review).toHaveProperty("movieId", fakeId);
-    expect(review).toHaveProperty("userId", fakeId);
+    expect(review).toHaveProperty("reviewedItemId", fakeId);
+    expect(review).toHaveProperty("reviewerId", fakeId);
     expect(review).toHaveProperty("rating", 3);
   });
 
