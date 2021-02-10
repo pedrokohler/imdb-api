@@ -15,11 +15,9 @@ const MovieSchema = new Schema({
   },
   genders: {
     type: [String],
-    required: true,
   },
   actors: {
     type: [String],
-    required: true,
   },
 });
 

@@ -8,8 +8,18 @@ const MovieController = Router();
 MovieController.post(
   "/",
   safeExecute(async (req, res) => {
+    const requiredFields = ["title", "director", "description"];
+    const isMissingRequiredField = requiredFields.some(
+      (field) => !Object.keys(req.body).includes(field)
+    );
+
+    if (isMissingRequiredField) {
+      return res.status(400).send(messageCodeMap.get(400));
+    }
+
     const movie = await MovieService.create(req.body);
-    return res.status(200).send(movie);
+    const { _id: id, ...response } = movie.toJSON();
+    return res.status(200).send({ id, ...response });
   })
 );
 
