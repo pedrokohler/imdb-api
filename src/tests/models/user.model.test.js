@@ -1,20 +1,16 @@
-// import bcrypt from "bcrypt";
 import User from "../../models/user.model";
+import {
+  defaultName,
+  defaultEmail,
+  defaultPassword,
+  defaultIsAdmin,
+  createUserPayload,
+} from "../helpers/user.payload.factory";
 
 let user;
 
-const defaultName = "My user";
-const defaultEmail = "my@email.com";
-const defaultPassword = "My plain text password";
-const defaultIsAdmin = false;
-
 beforeEach(() => {
-  user = new User({
-    name: defaultName,
-    email: defaultEmail,
-    password: defaultPassword,
-    isAdmin: defaultIsAdmin,
-  });
+  user = new User(createUserPayload());
 });
 
 describe("USER MODEL", () => {

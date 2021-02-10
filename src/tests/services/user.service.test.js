@@ -1,5 +1,9 @@
 import dbHandler from "../helpers/db.handler";
 import UserService from "../../services/user.service";
+import {
+  defaultPassword,
+  createUserPayload,
+} from "../helpers/user.payload.factory";
 
 beforeAll(async () => {
   await dbHandler.connect();
@@ -11,19 +15,8 @@ afterAll(async () => {
   await dbHandler.closeDatabase();
 });
 
-const defaultName = "My user";
-const defaultEmail = "my@email.com";
-const defaultPassword = "My plain text password";
-const defaultIsAdmin = false;
-
 const addUser = async (customizedPayload) => {
-  const user = await UserService.create({
-    name: defaultName,
-    email: defaultEmail,
-    password: defaultPassword,
-    isAdmin: defaultIsAdmin,
-    ...customizedPayload,
-  });
+  const user = await UserService.create(createUserPayload(customizedPayload));
   return user;
 };
 
