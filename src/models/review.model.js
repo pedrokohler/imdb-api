@@ -1,5 +1,7 @@
 import { model, Schema, Types } from "mongoose";
 
+const clamp = (number, min, max) => Math.min(Math.max(number, min), max);
+
 const ReviewSchema = new Schema({
   movieId: {
     type: Types.ObjectId,
@@ -14,10 +16,8 @@ const ReviewSchema = new Schema({
   rating: {
     type: Number,
     required: true,
-    get: (value) => Math.round(value),
-    set: (value) => Math.round(value),
-    min: 0,
-    max: 4,
+    get: (value) => Math.round(clamp(value, 0, 4)),
+    set: (value) => Math.round(clamp(value, 0, 4)),
   },
 });
 
