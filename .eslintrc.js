@@ -14,7 +14,7 @@ module.exports = {
     "prettier/prettier": "error",
     "import/no-extraneous-dependencies": [
       "error",
-      { devDependencies: ["**/tests/*"] },
+      { devDependencies: ["**/tests/**/*"] },
     ],
   },
 };

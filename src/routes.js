@@ -1,6 +1,6 @@
-import SimpleController from "./controllers/simple.controller";
+import UserController from "./controllers/user.controller";
 
-const routeControllerPairs = [["/", SimpleController]];
+const routeControllerPairs = [["/user", UserController]];
 
 const routes = (app) => {
   routeControllerPairs.forEach((route) => {
