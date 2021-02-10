@@ -1,6 +1,6 @@
 import request from "supertest";
 import UserService from "../../services/user.service";
-import dbHandler from "../db.handler";
+import dbHandler from "../helpers/db.handler";
 import app from "../../app";
 import messageCodeMap from "../../controllers/utils/message.codes";
 

@@ -1,5 +1,6 @@
-import dbHandler from "../db.handler";
+import dbHandler from "../helpers/db.handler";
 import MovieService from "../../services/movie.service";
+import { createMoviePayload } from "../helpers/movie.payload.factory";
 
 beforeAll(async () => {
   await dbHandler.connect();
@@ -11,21 +12,8 @@ afterAll(async () => {
   await dbHandler.closeDatabase();
 });
 
-const title = "My movie";
-const description = "My description";
-const director = "My director";
-const genders = ["My gender1", "My gender2"];
-const actors = ["My actor1", "My actor2"];
-
 const addMovie = async (customizedPayload) => {
-  await MovieService.create({
-    title,
-    description,
-    director,
-    genders,
-    actors,
-    ...customizedPayload,
-  });
+  await MovieService.create(createMoviePayload(customizedPayload));
 };
 
 describe("MOVIE SERVICE", () => {

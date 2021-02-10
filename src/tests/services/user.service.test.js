@@ -1,4 +1,4 @@
-import dbHandler from "../db.handler";
+import dbHandler from "../helpers/db.handler";
 import UserService from "../../services/user.service";
 
 beforeAll(async () => {

@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import dbHandler from "../db.handler";
+import dbHandler from "../helpers/db.handler";
 import ReviewService from "../../services/review.service";
 
 beforeAll(async () => {
