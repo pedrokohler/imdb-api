@@ -15,15 +15,20 @@ class DbServiceAdapter {
   }
 
   async update(id, patch) {
-    const options = {
-      new: true,
-    };
-    const document = await this.Model.findOneAndUpdate(
-      { _id: id },
-      patch,
-      options
-    );
-    return document;
+    try {
+      const options = {
+        new: true,
+      };
+      const document = await this.Model.findOneAndUpdate(
+        { _id: id },
+        patch,
+        options
+      );
+      return document;
+    } catch {
+      // in case it doesn't find the document
+      return null;
+    }
   }
 
   async list(filter) {

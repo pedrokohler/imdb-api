@@ -2,7 +2,7 @@ import request from "supertest";
 import UserService from "../../services/user.service";
 import dbHandler from "../db.handler";
 import app from "../../app";
-import errorMap from "../../controllers/utils/errors";
+import messageCodeMap from "../../controllers/utils/message.codes";
 
 beforeAll(async () => {
   await dbHandler.connect();
@@ -56,14 +56,14 @@ describe("USER CONTROLLER", () => {
       await request(app).post("/user").send(createRequestBody());
       const result = await request(app).post("/user").send(createRequestBody());
       expect(result.status).toBe(409);
-      expect(result.body).toEqual(errorMap.get(409));
+      expect(result.body).toEqual(messageCodeMap.get(409));
     });
 
     it("Should return a 400 status code if the request body is incomplete", async () => {
       await request(app).post("/user").send(createRequestBody());
       const result = await request(app).post("/user").send({ name: "Pedro" });
       expect(result.status).toBe(400);
-      expect(result.body).toEqual(errorMap.get(400));
+      expect(result.body).toEqual(messageCodeMap.get(400));
     });
   });
 
@@ -103,7 +103,47 @@ describe("USER CONTROLLER", () => {
         .send({ ...createRequestBody(), ...body });
       const result = await request(app).patch(`/user/${id}`).send(body);
       expect(result.status).toBe(409);
-      expect(result.body).toEqual(errorMap.get(409));
+      expect(result.body).toEqual(messageCodeMap.get(409));
+    });
+
+    it("Should return 400 status if tries to update unupdatable field", async () => {
+      const {
+        body: { id },
+      } = await request(app).post("/user").send(createRequestBody());
+      const body = { isActive: false };
+      const result = await request(app).patch(`/user/${id}`).send(body);
+      expect(result.status).toBe(400);
+      expect(result.body).toEqual(messageCodeMap.get(400));
+    });
+
+    it("Should return 404 status if user is not found", async () => {
+      // just so that cleatDatabase() doesn't throw an error
+      await request(app).post("/user").send(createRequestBody());
+
+      const body = { name: "Pedro" };
+      const result = await request(app).patch(`/user/fakeId`).send(body);
+      expect(result.status).toBe(404);
+      expect(result.body).toEqual(messageCodeMap.get(404));
+    });
+  });
+
+  describe("DELETE USER", () => {
+    it("Should delete an existing user", async () => {
+      const {
+        body: { id },
+      } = await request(app).post("/user").send(createRequestBody());
+      const result = await request(app).delete(`/user/${id}`);
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual(messageCodeMap.get(200));
+    });
+
+    it("Should return 404 status if user is not found", async () => {
+      // just so that cleatDatabase() doesn't throw an error
+      await request(app).post("/user").send(createRequestBody());
+
+      const result = await request(app).delete(`/user/fakeId`);
+      expect(result.status).toBe(404);
+      expect(result.body).toEqual(messageCodeMap.get(404));
     });
   });
 });
