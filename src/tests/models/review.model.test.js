@@ -10,7 +10,7 @@ const createReview = (rating) =>
     rating,
   });
 
-describe("USER MODEL", () => {
+describe("REVIEW MODEL", () => {
   it("Should create a review", () => {
     const review = createReview(3);
 

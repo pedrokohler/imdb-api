@@ -27,7 +27,7 @@ const addUser = async (customizedPayload) => {
   return user;
 };
 
-describe("USER MODEL", () => {
+describe("USER SERVICE", () => {
   it("Should save a user in the database without errors", async () => {
     try {
       await addUser({});

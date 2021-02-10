@@ -28,7 +28,7 @@ const addMovie = async (customizedPayload) => {
   });
 };
 
-describe("MOVIE MODEL", () => {
+describe("MOVIE SERVICE", () => {
   it("Should save a movie in the database without errors", async () => {
     try {
       await addMovie({});
