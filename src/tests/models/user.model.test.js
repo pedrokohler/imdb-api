@@ -25,16 +25,30 @@ describe("USER MODEL", () => {
     expect(user).toHaveProperty("isAdmin", defaultIsAdmin);
   });
 
-  //   it("Should not store the plain text password after validation", async () => {
-  //     expect(user.password).not.toBe(defaultPassword);
-  //   });
+  it("Should have a method encryptPassword", () => {
+    expect(user).toHaveProperty("encryptPassword");
+    expect(typeof user.encryptPassword).toBe("function");
+  });
 
-  //   it("Should store a encypted version of the password", async () => {
-  //     const plainTextPassword = user.password;
-  //     const isValidPassword = await bcrypt.compare(
-  //       plainTextPassword,
-  //       user.password
-  //     );
-  //     expect(isValidPassword).toBeTruthy();
-  //   });
+  it("Should have a method comparePassword", () => {
+    expect(user).toHaveProperty("comparePassword");
+    expect(typeof user.encryptPassword).toBe("function");
+  });
+
+  it("Should call user.encryptPassword when validating a user with a new password", async () => {
+    const spy = jest.spyOn(user, "encryptPassword");
+    await user.validate();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it("Should not store the plain text password after validation", async () => {
+    await user.validate();
+    expect(user.password).not.toBe(defaultPassword);
+  });
+
+  it("Should store an encypted version of the password after validation", async () => {
+    await user.validate();
+    const isValidPassword = await user.comparePassword(defaultPassword);
+    expect(isValidPassword).toBe(true);
+  });
 });
