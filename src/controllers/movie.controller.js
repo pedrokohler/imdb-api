@@ -27,6 +27,11 @@ const isDuplicateReview = async (reviewerId, reviewedItemId) => {
   return list.length > 0;
 };
 
+const checkReviewedItemExists = async (reviewedItemId) => {
+  const item = await MovieService.find(reviewedItemId);
+  return item;
+};
+
 MovieController.post(
   "/",
   safeExecute(async (req, res) => {
@@ -54,6 +59,11 @@ MovieController.post(
 
     if (isAdmin(req)) {
       return res.status(401).json(messageCodeMap.get(401));
+    }
+
+    const reviewedItemExists = await checkReviewedItemExists(reviewedItemId);
+    if (!reviewedItemExists) {
+      return res.status(404).json(messageCodeMap.get(404));
     }
 
     const reviewAlreadyExists = await isDuplicateReview(

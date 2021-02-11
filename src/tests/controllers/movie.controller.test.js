@@ -51,9 +51,15 @@ describe("MOVIE CONTROLLER", () => {
   });
 
   describe("REVIEW MOVIE", () => {
+    let body;
+    beforeEach(async () => {
+      const { body: movie } = await post("/movie")
+        .send(createMoviePayload())
+        .build();
+      body = createReviewPayload({ reviewedItemId: movie.id });
+    });
     it("Should call ReviewService.create once if it is a valid request", async () => {
       const spy = jest.spyOn(ReviewService, "create");
-      const body = createReviewPayload();
 
       await post(`/movie/${body.reviewedItemId}/review`)
         .withValidRegularUserToken(body.reviewerId)
@@ -68,9 +74,7 @@ describe("MOVIE CONTROLLER", () => {
       });
     });
 
-    it("Should return the json data of the created movie with status 200", async () => {
-      const body = createReviewPayload();
-
+    it("Should return the json data of the created review with status 200", async () => {
       const result = await post(`/movie/${body.reviewedItemId}/review`)
         .withValidRegularUserToken(body.reviewerId)
         .send({ rating: body.rating })
@@ -89,9 +93,7 @@ describe("MOVIE CONTROLLER", () => {
       expect(result.body).toHaveProperty("id");
     });
 
-    it("Should not allow to create a (reviewerId, reviewedItemId) pair duplicate", async () => {
-      const body = createReviewPayload();
-
+    it("Should not allow to create two reviews with same (reviewerId, reviewedItemId) pair", async () => {
       await post(`/movie/${body.reviewedItemId}/review`)
         .withValidRegularUserToken(body.reviewerId)
         .send({ rating: body.rating })
@@ -105,9 +107,20 @@ describe("MOVIE CONTROLLER", () => {
       expect(result.body).toEqual(messageCodeMap.get(409));
     });
 
+    it("Should not allow to create a review if the movie does't exist", async () => {
+      const noMovieBody = createReviewPayload();
+      const result = await post(`/movie/${noMovieBody.reviewedItemId}/review`)
+        .withValidRegularUserToken(noMovieBody.reviewerId)
+        .send({ rating: noMovieBody.rating })
+        .build();
+
+      expect(result.status).toBe(404);
+      expect(result.body).toEqual(messageCodeMap.get(404));
+    });
+
     it("Should not allow admin users to create reviews", async () => {
-      const result = await post("/movie/id/review")
-        .withValidAdminToken(generateRandomId())
+      const result = await post(`/movie/${body.reviewedItemId}/review`)
+        .withValidAdminToken(body.reviewerId)
         .build();
       expect(result.status).toBe(401);
       expect(result.body).toEqual(messageCodeMap.get(401));
