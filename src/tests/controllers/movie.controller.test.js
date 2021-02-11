@@ -27,24 +27,44 @@ describe("MOVIE CONTROLLER", () => {
     it("Should call MovieService.create once if it is a valid movie", async () => {
       const spy = jest.spyOn(MovieService, "create");
       const body = createMoviePayload();
-      await post("/movies").send(body).build();
+      await post("/movies").withValidAdminToken().send(body).build();
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(body);
     });
 
     it("Should return the json data of the created movie with status 200", async () => {
       const body = createMoviePayload();
-      const result = await post("/movies").send(body).build();
+      const result = await post("/movies")
+        .withValidAdminToken()
+        .send(body)
+        .build();
       expect(result.status).toBe(200);
       expect(result.body).toEqual(expect.objectContaining(body));
       expect(result.body).toHaveProperty("id");
     });
 
     it("Should return a 400 status code if the request body is incomplete", async () => {
-      await post("/movies").send(createMoviePayload()).build();
-      const result = await post("/movies").send({ title: "Movie" }).build();
+      const result = await post("/movies")
+        .withValidAdminToken()
+        .send({ title: "Movie" })
+        .build();
       expect(result.status).toBe(400);
       expect(result.body).toEqual(messageCodeMap.get(400));
+    });
+
+    it("Should return a 401 status code if user is not authenticated or is not admin", async () => {
+      const resultWithoutAdmin = await post("/movies")
+        .withValidRegularUserToken()
+        .send(createMoviePayload())
+        .build();
+      expect(resultWithoutAdmin.status).toBe(401);
+      expect(resultWithoutAdmin.body).toEqual(messageCodeMap.get(401));
+
+      const resultWithoutAuthentication = await post("/movies")
+        .send(createMoviePayload())
+        .build();
+      expect(resultWithoutAuthentication.status).toBe(401);
+      expect(resultWithoutAuthentication.body).toEqual(messageCodeMap.get(401));
     });
   });
 
@@ -53,6 +73,7 @@ describe("MOVIE CONTROLLER", () => {
 
     beforeEach(async () => {
       const { body: movie } = await post("/movies")
+        .withValidAdminToken()
         .send(createMoviePayload())
         .build();
       body = createReviewPayload({ reviewedItemId: movie.id });
@@ -144,11 +165,26 @@ describe("MOVIE CONTROLLER", () => {
 
     it("Should return the json data of the list with status 200", async () => {
       await Promise.all([
-        post("/movies").send(createMoviePayload({ director, genders })).build(),
-        post("/movies").send(createMoviePayload({ director })).build(),
-        post("/movies").send(createMoviePayload({ genders })).build(),
-        post("/movies").send(createMoviePayload({ director, genders })).build(),
-        post("/movies").send(createMoviePayload()).build(),
+        post("/movies")
+          .withValidAdminToken()
+          .send(createMoviePayload({ director, genders }))
+          .build(),
+        post("/movies")
+          .withValidAdminToken()
+          .send(createMoviePayload({ director }))
+          .build(),
+        post("/movies")
+          .withValidAdminToken()
+          .send(createMoviePayload({ genders }))
+          .build(),
+        post("/movies")
+          .withValidAdminToken()
+          .send(createMoviePayload({ director, genders }))
+          .build(),
+        post("/movies")
+          .withValidAdminToken()
+          .send(createMoviePayload())
+          .build(),
       ]);
       const result = await get(`/movies?${searchParams.toString()}`).build();
       expect(result.body).toHaveLength(2);

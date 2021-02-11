@@ -10,8 +10,11 @@ const MovieController = Router();
 const isAdmin = (req) => {
   // @todo: implement to get this information from JWT token
   const token = req.header("Authorization");
-  const parsedToken = JSON.parse(token);
-  return parsedToken.isAdmin;
+  if (token) {
+    const parsedToken = JSON.parse(token);
+    return parsedToken.isAdmin;
+  }
+  return false;
 };
 
 const getUserId = (req) => {
@@ -43,6 +46,10 @@ MovieController.post(
 
     if (isMissingRequiredField) {
       return res.status(400).send(messageCodeMap.get(400));
+    }
+
+    if (!isAdmin(req)) {
+      return res.status(401).json(messageCodeMap.get(401));
     }
 
     const movie = await MovieService.create(req.body);
