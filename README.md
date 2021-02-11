@@ -1,6 +1,6 @@
 # Introduction
 
-This is a code challenge project based on the specifications below.
+This is a code challenge project based on the [specifications below](#code-challenge-specifications).
 
 In order to run the project, first install the depenencies
 ```
@@ -45,7 +45,7 @@ The final API documentation is [here](https://documentergetpostman.com/view/8084
 - Project Structure
 - API security, such as authentication, passwords saved in the database, SQL Injection and others
 - Good Language/Framework practices
-- Your project should follow everything that was required in the What to develop? section
+- Your project should follow everything that was required in the [What to develop?](#what-to-develop) section
 - Migrations for creating relational database tables
 
 # 🎁 Extra
