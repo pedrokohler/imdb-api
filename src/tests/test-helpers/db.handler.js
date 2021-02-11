@@ -23,11 +23,7 @@ const closeDatabase = async () => {
 };
 
 const clearDatabase = async () => {
-  const modelNames = mongoose.modelNames();
-  const dropPromises = modelNames.map((model) =>
-    mongoose.model(model).collection.drop()
-  );
-  await Promise.allSettled(dropPromises);
+  await mongoose.connection.dropDatabase();
 };
 
 export default {
