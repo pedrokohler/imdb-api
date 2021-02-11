@@ -18,7 +18,7 @@ LoginController.post(
     }
 
     const isValidPassword = await user.comparePassword(password);
-    if (!isValidPassword) {
+    if (!user.isActive || !isValidPassword) {
       return res.status(401).send(messageCodeMap.get(401));
     }
 

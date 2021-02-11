@@ -17,6 +17,7 @@ afterAll(async () => {
 const RequestBuilderInstance = new RequestBuilder();
 
 const post = (path) => RequestBuilderInstance.newRequest().post(path);
+const deletion = (path) => RequestBuilderInstance.newRequest().delete(path);
 
 describe("LOGIN CONTROLLER", () => {
   let user;
@@ -66,6 +67,17 @@ describe("LOGIN CONTROLLER", () => {
     const body = {
       email: user.email,
       password: "wrong password",
+    };
+    const result = await post("/login").send(body).build();
+    expect(result.status).toBe(401);
+    expect(result.body).toEqual(messageCodeMap.get(401));
+  });
+
+  it("Should send a 401 error when user is deleted", async () => {
+    await deletion(`/users/${user.id}`).build();
+    const body = {
+      email: userPayload.email,
+      password: userPayload.password,
     };
     const result = await post("/login").send(body).build();
     expect(result.status).toBe(401);
