@@ -79,7 +79,7 @@ MovieController.post(
     const { rating } = req.body;
 
     const isAdmin = await getIsAdmin(req);
-    if (isAdmin) {
+    if (isAdmin || !reviewerId) {
       return res.status(401).json(messageCodeMap.get(401));
     }
 
