@@ -3,7 +3,10 @@ import dbHandler from "../test-helpers/db.handler";
 import messageCodeMap from "../../controllers/utils/message.codes";
 import { createMoviePayload } from "../test-helpers/movie.payload.factory";
 import RequestBuilder from "../test-helpers/request.builder";
-import { createReviewPayload } from "../test-helpers/review.payload.factory";
+import {
+  createReviewPayload,
+  generateRandomId,
+} from "../test-helpers/review.payload.factory";
 import ReviewService from "../../services/review.service";
 import { createAndFilter } from "../../controllers/utils/filter.factory";
 
@@ -186,6 +189,7 @@ describe("MOVIE CONTROLLER", () => {
           .send(createMoviePayload())
           .build(),
       ]);
+
       const result = await get(`/movies?${searchParams.toString()}`).build();
       expect(result.body).toHaveLength(2);
 
@@ -194,5 +198,58 @@ describe("MOVIE CONTROLLER", () => {
     });
   });
 
-  // describe("GET MOVIE", () => {});
+  describe("GET MOVIE", () => {
+    const body = createMoviePayload();
+    let movie;
+    beforeEach(async () => {
+      const result = await post("/movies")
+        .withValidAdminToken()
+        .send(body)
+        .build();
+      movie = result.body;
+    });
+    it("Should call MovieService.get once", async () => {
+      const spy = jest.spyOn(MovieService, "find");
+      const id = "id";
+
+      await get(`/movies/${id}`).build();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(id);
+    });
+
+    it("Should return the json data of the movie with status 200", async () => {
+      const result = await get(`/movies/${movie.id}`).build();
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual(expect.objectContaining(body));
+      expect(result.body).toHaveProperty("id");
+    });
+
+    it("Should include the review rating average", async () => {
+      const reviewPayload1 = createReviewPayload({
+        reviewedItemId: movie.id,
+      });
+      await post(`/movies/${reviewPayload1.reviewedItemId}/review`)
+        .withValidRegularUserToken(reviewPayload1.reviewerId)
+        .send({ rating: 3 })
+        .build();
+
+      const reviewPayload2 = createReviewPayload({
+        reviewedItemId: movie.id,
+      });
+      await post(`/movies/${reviewPayload2.reviewedItemId}/review`)
+        .withValidRegularUserToken(reviewPayload2.reviewerId)
+        .send({ rating: 2 })
+        .build();
+
+      const result = await get(`/movies/${movie.id}`).build();
+      expect(result.status).toBe(200);
+      expect(result.body).toHaveProperty("rating", 3);
+    });
+
+    it("Should return 404 status if movie is not found", async () => {
+      const result = await get(`/movies/${generateRandomId()}`).build();
+      expect(result.body).toEqual(messageCodeMap.get(404));
+      expect(result.status).toBe(404);
+    });
+  });
 });

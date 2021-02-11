@@ -36,6 +36,20 @@ const checkReviewedItemExists = async (reviewedItemId) => {
   return item;
 };
 
+const getRating = async (reviewedItemId) => {
+  const reviews = await ReviewService.list({ reviewedItemId });
+  if (reviews.length) {
+    const accumulatedRating = reviews.reduce(
+      (acc, review) => acc + review.rating,
+      0
+    );
+    return Number(
+      Number.parseFloat(accumulatedRating / reviews.length).toFixed(2)
+    );
+  }
+  return 0;
+};
+
 MovieController.post(
   "/",
   safeExecute(async (req, res) => {
@@ -105,8 +119,16 @@ MovieController.get(
 MovieController.get(
   "/:id",
   safeExecute(async (req, res) => {
-    const { director } = req.query;
-    return res.send(director);
+    const { id } = req.params;
+    const movie = await MovieService.find(id);
+
+    if (!movie) {
+      return res.status(404).json(messageCodeMap.get(404));
+    }
+
+    const rating = await getRating(id);
+    const { _id, ...result } = movie.toJSON();
+    return res.status(200).json({ id: _id, ...result, rating });
   })
 );
 
