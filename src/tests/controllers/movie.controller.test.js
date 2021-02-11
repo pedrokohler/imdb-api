@@ -225,12 +225,12 @@ describe("MOVIE CONTROLLER", () => {
         reviewedItemId: movie.id,
       });
       await post(`/movies/${reviewPayload2.reviewedItemId}/review`)
-        .withValidRegularUserToken(reviewPayload2.reviewerId)
+        .withValidRegularUserToken(generateRandomId())
         .then((self) => self.send({ rating: 2 }).build());
 
       const result = await get(`/movies/${movie.id}`).build();
       expect(result.status).toBe(200);
-      expect(result.body).toHaveProperty("rating", 3);
+      expect(result.body).toHaveProperty("rating", 2.5);
     });
 
     it("Should return 404 status if movie is not found", async () => {

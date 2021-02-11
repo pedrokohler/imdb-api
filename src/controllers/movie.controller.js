@@ -36,6 +36,7 @@ const checkReviewedItemExists = async (reviewedItemId) => {
 
 const getRating = async (reviewedItemId) => {
   const reviews = await ReviewService.list({ reviewedItemId });
+
   if (reviews.length) {
     const accumulatedRating = reviews.reduce(
       (acc, review) => acc + review.rating,
