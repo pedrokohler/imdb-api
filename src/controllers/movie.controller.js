@@ -1,6 +1,7 @@
 import { Router } from "express";
 import MovieService from "../services/movie.service";
 import ReviewService from "../services/review.service";
+import { createAndFilter } from "./utils/filter.factory";
 import messageCodeMap from "./utils/message.codes";
 import safeExecute from "./utils/safe.execute";
 
@@ -85,15 +86,17 @@ MovieController.post(
 );
 
 MovieController.get(
-  "/:id",
+  "/search",
   safeExecute(async (req, res) => {
-    const { director } = req.query;
-    return res.send(director);
+    const { query } = req;
+    const filter = createAndFilter(query);
+    const list = await MovieService.list(filter);
+    return res.status(200).json(list);
   })
 );
 
 MovieController.get(
-  "/search",
+  "/:id",
   safeExecute(async (req, res) => {
     const { director } = req.query;
     return res.send(director);

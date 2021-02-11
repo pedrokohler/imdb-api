@@ -3,11 +3,9 @@ import dbHandler from "../test-helpers/db.handler";
 import messageCodeMap from "../../controllers/utils/message.codes";
 import { createMoviePayload } from "../test-helpers/movie.payload.factory";
 import RequestBuilder from "../test-helpers/request.builder";
-import {
-  createReviewPayload,
-  generateRandomId,
-} from "../test-helpers/review.payload.factory";
+import { createReviewPayload } from "../test-helpers/review.payload.factory";
 import ReviewService from "../../services/review.service";
+import { createAndFilter } from "../../controllers/utils/filter.factory";
 
 beforeAll(async () => {
   await dbHandler.connect();
@@ -22,7 +20,7 @@ afterAll(async () => {
 const RequestBuilderInstance = new RequestBuilder();
 
 const post = (path) => RequestBuilderInstance.newRequest().post(path);
-// const get = (path) => RequestBuilderInstance.newRequest().get(path);
+const get = (path) => RequestBuilderInstance.newRequest().get(path);
 
 describe("MOVIE CONTROLLER", () => {
   describe("CREATE MOVIE", () => {
@@ -52,12 +50,14 @@ describe("MOVIE CONTROLLER", () => {
 
   describe("REVIEW MOVIE", () => {
     let body;
+
     beforeEach(async () => {
       const { body: movie } = await post("/movie")
         .send(createMoviePayload())
         .build();
       body = createReviewPayload({ reviewedItemId: movie.id });
     });
+
     it("Should call ReviewService.create once if it is a valid request", async () => {
       const spy = jest.spyOn(ReviewService, "create");
 
@@ -127,7 +127,36 @@ describe("MOVIE CONTROLLER", () => {
     });
   });
 
-  // describe("GET MOVIE", () => {});
+  describe("GET MOVIE LIST", () => {
+    const director = "tarantino";
+    const genders = "action";
+    const query = { director, genders };
+    const searchParams = new URLSearchParams(query);
 
-  // describe("GET MOVIE LIST", () => {});
+    it("Should call MovieService.list once if it is a valid request", async () => {
+      const spy = jest.spyOn(MovieService, "list");
+
+      await get(`/movie/search?${searchParams.toString()}`).build();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(createAndFilter(query));
+    });
+
+    it("Should return the json data of the list with status 200", async () => {
+      await Promise.all([
+        post("/movie").send(createMoviePayload({ director, genders })).build(),
+        post("/movie").send(createMoviePayload({ director })).build(),
+        post("/movie").send(createMoviePayload({ genders })).build(),
+        post("/movie").send(createMoviePayload({ director, genders })).build(),
+        post("/movie").send(createMoviePayload()).build(),
+      ]);
+      const result = await get(
+        `/movie/search?${searchParams.toString()}`
+      ).build();
+
+      expect(result.body).toHaveLength(2);
+    });
+  });
+
+  // describe("GET MOVIE", () => {});
 });
