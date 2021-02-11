@@ -15,7 +15,7 @@ MONGO_CONNECTION_STRING=
 
 That's it. After that you can run the program according to the scripts contained in the package.json file.
 
-The final API documentation is [here](https://documentergetpostman.com/view/8084147/TW77hjCp).
+The final API documentation is [here](https://documenter.getpostman.com/view/8084147/TW77hjCp).
 
 
 # Code challenge specifications
