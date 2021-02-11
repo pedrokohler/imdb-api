@@ -23,6 +23,16 @@ class TokenHandler {
     );
     return token;
   }
+
+  async verifyToken(authorization) {
+    const bearerRegex = /^Bearer /;
+    if (authorization && bearerRegex.test(authorization)) {
+      const token = authorization.replace(bearerRegex, "");
+      const decoded = await jwt.verify(token, this.secret);
+      return decoded;
+    }
+    return {};
+  }
 }
 
 const tokenHandler = new TokenHandler(JWT_SECRET_KEY);

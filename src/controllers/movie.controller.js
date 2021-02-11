@@ -4,23 +4,21 @@ import ReviewService from "../services/review.service";
 import { createLogicalAndFilter } from "./utils/filter.factory";
 import messageCodeMap from "./utils/message.codes";
 import safeExecute from "./utils/safe.execute";
+import tokenHandler from "./utils/token.handler";
 
 const MovieController = Router();
 
-const isAdmin = (req) => {
-  // @todo: implement to get this information from JWT token
-  const token = req.header("Authorization");
-  if (token) {
-    const parsedToken = JSON.parse(token);
-    return parsedToken.isAdmin;
-  }
-  return false;
+const getIsAdmin = async (req) => {
+  const authorization = req.header("Authorization");
+  const decoded = await tokenHandler.verifyToken(authorization);
+  const { isAdmin } = decoded;
+  return isAdmin;
 };
 
-const getUserId = (req) => {
-  // @todo: implement to get ID from JWT token
-  const token = req.header("Authorization");
-  const { userId } = JSON.parse(token);
+const getUserId = async (req) => {
+  const authorization = req.header("Authorization");
+  const decoded = await tokenHandler.verifyToken(authorization);
+  const { userId } = decoded;
   return userId;
 };
 
@@ -62,7 +60,8 @@ MovieController.post(
       return res.status(400).send(messageCodeMap.get(400));
     }
 
-    if (!isAdmin(req)) {
+    const isAdmin = await getIsAdmin(req);
+    if (!isAdmin) {
       return res.status(401).json(messageCodeMap.get(401));
     }
 
@@ -76,10 +75,11 @@ MovieController.post(
   "/:id/review",
   safeExecute(async (req, res) => {
     const { id: reviewedItemId } = req.params;
-    const reviewerId = getUserId(req);
+    const reviewerId = await getUserId(req);
     const { rating } = req.body;
 
-    if (isAdmin(req)) {
+    const isAdmin = await getIsAdmin(req);
+    if (isAdmin) {
       return res.status(401).json(messageCodeMap.get(401));
     }
 

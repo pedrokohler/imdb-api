@@ -30,7 +30,9 @@ describe("MOVIE CONTROLLER", () => {
     it("Should call MovieService.create once if it is a valid movie", async () => {
       const spy = jest.spyOn(MovieService, "create");
       const body = createMoviePayload();
-      await post("/movies").withValidAdminToken().send(body).build();
+      await post("/movies")
+        .withValidAdminToken()
+        .then((self) => self.send(body).build());
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(body);
     });
@@ -39,8 +41,7 @@ describe("MOVIE CONTROLLER", () => {
       const body = createMoviePayload();
       const result = await post("/movies")
         .withValidAdminToken()
-        .send(body)
-        .build();
+        .then((self) => self.send(body).build());
       expect(result.status).toBe(200);
       expect(result.body).toEqual(expect.objectContaining(body));
       expect(result.body).toHaveProperty("id");
@@ -49,8 +50,7 @@ describe("MOVIE CONTROLLER", () => {
     it("Should return a 400 status code if the request body is incomplete", async () => {
       const result = await post("/movies")
         .withValidAdminToken()
-        .send({ title: "Movie" })
-        .build();
+        .then((self) => self.send({ title: "Movie" }).build());
       expect(result.status).toBe(400);
       expect(result.body).toEqual(messageCodeMap.get(400));
     });
@@ -58,16 +58,15 @@ describe("MOVIE CONTROLLER", () => {
     it("Should return a 401 status code if user is not authenticated or is not admin", async () => {
       const resultWithoutAdmin = await post("/movies")
         .withValidRegularUserToken()
-        .send(createMoviePayload())
-        .build();
+        .then((self) => self.send(createMoviePayload()).build());
       expect(resultWithoutAdmin.status).toBe(401);
       expect(resultWithoutAdmin.body).toEqual(messageCodeMap.get(401));
 
       const resultWithoutAuthentication = await post("/movies")
         .send(createMoviePayload())
         .build();
-      expect(resultWithoutAuthentication.status).toBe(401);
       expect(resultWithoutAuthentication.body).toEqual(messageCodeMap.get(401));
+      expect(resultWithoutAuthentication.status).toBe(401);
     });
   });
 
@@ -77,8 +76,7 @@ describe("MOVIE CONTROLLER", () => {
     beforeEach(async () => {
       const { body: movie } = await post("/movies")
         .withValidAdminToken()
-        .send(createMoviePayload())
-        .build();
+        .then((self) => self.send(createMoviePayload()).build());
       body = createReviewPayload({ reviewedItemId: movie.id });
     });
 
@@ -87,8 +85,7 @@ describe("MOVIE CONTROLLER", () => {
 
       await post(`/movies/${body.reviewedItemId}/review`)
         .withValidRegularUserToken(body.reviewerId)
-        .send({ rating: body.rating })
-        .build();
+        .then((self) => self.send({ rating: body.rating }).build());
 
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith({
@@ -101,8 +98,7 @@ describe("MOVIE CONTROLLER", () => {
     it("Should return the json data of the created review with status 200", async () => {
       const result = await post(`/movies/${body.reviewedItemId}/review`)
         .withValidRegularUserToken(body.reviewerId)
-        .send({ rating: body.rating })
-        .build();
+        .then((self) => self.send({ rating: body.rating }).build());
 
       expect(result.status).toBe(200);
       expect(result.body).toHaveProperty(
@@ -120,12 +116,10 @@ describe("MOVIE CONTROLLER", () => {
     it("Should not allow to create two reviews with same (reviewerId, reviewedItemId) pair", async () => {
       await post(`/movies/${body.reviewedItemId}/review`)
         .withValidRegularUserToken(body.reviewerId)
-        .send({ rating: body.rating })
-        .build();
+        .then((self) => self.send({ rating: body.rating }).build());
       const result = await post(`/movies/${body.reviewedItemId}/review`)
         .withValidRegularUserToken(body.reviewerId)
-        .send({ rating: body.rating })
-        .build();
+        .then((self) => self.send({ rating: body.rating }).build());
 
       expect(result.status).toBe(409);
       expect(result.body).toEqual(messageCodeMap.get(409));
@@ -135,8 +129,7 @@ describe("MOVIE CONTROLLER", () => {
       const noMovieBody = createReviewPayload();
       const result = await post(`/movies/${noMovieBody.reviewedItemId}/review`)
         .withValidRegularUserToken(noMovieBody.reviewerId)
-        .send({ rating: noMovieBody.rating })
-        .build();
+        .then((self) => self.send({ rating: noMovieBody.rating }).build());
 
       expect(result.status).toBe(404);
       expect(result.body).toEqual(messageCodeMap.get(404));
@@ -145,7 +138,7 @@ describe("MOVIE CONTROLLER", () => {
     it("Should not allow admin users to create reviews", async () => {
       const result = await post(`/movies/${body.reviewedItemId}/review`)
         .withValidAdminToken(body.reviewerId)
-        .build();
+        .then((self) => self.build());
       expect(result.status).toBe(401);
       expect(result.body).toEqual(messageCodeMap.get(401));
     });
@@ -167,28 +160,25 @@ describe("MOVIE CONTROLLER", () => {
     });
 
     it("Should return the json data of the list with status 200", async () => {
-      await Promise.all([
-        post("/movies")
-          .withValidAdminToken()
-          .send(createMoviePayload({ director, genders }))
-          .build(),
-        post("/movies")
-          .withValidAdminToken()
-          .send(createMoviePayload({ director }))
-          .build(),
-        post("/movies")
-          .withValidAdminToken()
-          .send(createMoviePayload({ genders }))
-          .build(),
-        post("/movies")
-          .withValidAdminToken()
-          .send(createMoviePayload({ director, genders }))
-          .build(),
-        post("/movies")
-          .withValidAdminToken()
-          .send(createMoviePayload())
-          .build(),
-      ]);
+      await post("/movies")
+        .withValidAdminToken()
+        .then((self) =>
+          self.send(createMoviePayload({ director, genders })).build()
+        );
+      await post("/movies")
+        .withValidAdminToken()
+        .then((self) => self.send(createMoviePayload({ director })).build());
+      await post("/movies")
+        .withValidAdminToken()
+        .then((self) => self.send(createMoviePayload({ genders })).build());
+      await post("/movies")
+        .withValidAdminToken()
+        .then((self) =>
+          self.send(createMoviePayload({ director, genders })).build()
+        );
+      await post("/movies")
+        .withValidAdminToken()
+        .then((self) => self.send(createMoviePayload()).build());
 
       const result = await get(`/movies?${searchParams.toString()}`).build();
       expect(result.body).toHaveLength(2);
@@ -204,8 +194,7 @@ describe("MOVIE CONTROLLER", () => {
     beforeEach(async () => {
       const result = await post("/movies")
         .withValidAdminToken()
-        .send(body)
-        .build();
+        .then((self) => self.send(body).build());
       movie = result.body;
     });
     it("Should call MovieService.get once", async () => {
@@ -230,16 +219,14 @@ describe("MOVIE CONTROLLER", () => {
       });
       await post(`/movies/${reviewPayload1.reviewedItemId}/review`)
         .withValidRegularUserToken(reviewPayload1.reviewerId)
-        .send({ rating: 3 })
-        .build();
+        .then((self) => self.send({ rating: 3 }).build());
 
       const reviewPayload2 = createReviewPayload({
         reviewedItemId: movie.id,
       });
       await post(`/movies/${reviewPayload2.reviewedItemId}/review`)
         .withValidRegularUserToken(reviewPayload2.reviewerId)
-        .send({ rating: 2 })
-        .build();
+        .then((self) => self.send({ rating: 2 }).build());
 
       const result = await get(`/movies/${movie.id}`).build();
       expect(result.status).toBe(200);

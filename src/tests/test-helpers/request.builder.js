@@ -44,19 +44,15 @@ class RequestBuilder {
     return this;
   }
 
-  withValidRegularUserToken(userId) {
-    this.request = this.request.set(
-      "Authorization",
-      createValidRegularUserToken(userId)
-    );
+  async withValidRegularUserToken(userId) {
+    const authorization = await createValidRegularUserToken(userId);
+    this.request = this.request.set("Authorization", authorization);
     return this;
   }
 
-  withValidAdminToken(userId) {
-    this.request = this.request.set(
-      "Authorization",
-      createValidAdminToken(userId)
-    );
+  async withValidAdminToken(userId) {
+    const authorization = await createValidAdminToken(userId);
+    this.request = this.request.set("Authorization", authorization);
     return this;
   }
 }

@@ -1,12 +1,21 @@
 import { Types } from "mongoose";
+import tokenHandler from "../../controllers/utils/token.handler";
 
-// @todo: implement
-export const createValidAdminToken = (id) =>
-  JSON.stringify({ isAdmin: true, userId: id || Types.ObjectId() });
+export const createValidAdminToken = async (id) => {
+  const token = await tokenHandler.createToken({
+    isAdmin: true,
+    id: id || Types.ObjectId(),
+  });
+  return `Bearer ${token}`;
+};
 
-// @todo: implement
-export const createValidRegularUserToken = (id) =>
-  JSON.stringify({ isAdmin: false, userId: id || Types.ObjectId() });
+export const createValidRegularUserToken = async (id) => {
+  const token = await tokenHandler.createToken({
+    isAdmin: false,
+    id: id || Types.ObjectId(),
+  });
+  return `Bearer ${token}`;
+};
 
 export default {
   createValidAdminToken,
