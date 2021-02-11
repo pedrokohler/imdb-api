@@ -2,8 +2,8 @@ import UserController from "./controllers/user.controller";
 import MovieController from "./controllers/movie.controller";
 
 const routeControllerPairs = [
-  ["/movie", MovieController],
-  ["/user", UserController],
+  ["/movies", MovieController],
+  ["/users", UserController],
 ];
 
 const routes = (app) => {

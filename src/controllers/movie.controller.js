@@ -86,7 +86,7 @@ MovieController.post(
 );
 
 MovieController.get(
-  "/search",
+  "/",
   safeExecute(async (req, res) => {
     const { query } = req;
     const filter = createAndFilter(query);

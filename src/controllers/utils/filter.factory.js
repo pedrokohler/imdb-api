@@ -1,11 +1,13 @@
 export const createAndFilter = (query) =>
-  Object.entries(query).reduce(
-    (acc, [key, value]) => {
-      const params = [...acc.$and, { [key]: value }];
+  Object.entries(query).reduce((acc, [key, value]) => {
+    const { $and } = acc;
+    const obj = { [key]: value };
+    if ($and) {
+      const params = [...$and, obj];
       return { $and: params };
-    },
-    { $and: [] }
-  );
+    }
+    return { $and: [obj] };
+  }, {});
 
 export default {
   createAndFilter,

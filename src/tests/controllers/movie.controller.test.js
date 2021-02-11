@@ -27,22 +27,22 @@ describe("MOVIE CONTROLLER", () => {
     it("Should call MovieService.create once if it is a valid movie", async () => {
       const spy = jest.spyOn(MovieService, "create");
       const body = createMoviePayload();
-      await post("/movie").send(body).build();
+      await post("/movies").send(body).build();
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(body);
     });
 
     it("Should return the json data of the created movie with status 200", async () => {
       const body = createMoviePayload();
-      const result = await post("/movie").send(body).build();
+      const result = await post("/movies").send(body).build();
       expect(result.status).toBe(200);
       expect(result.body).toEqual(expect.objectContaining(body));
       expect(result.body).toHaveProperty("id");
     });
 
     it("Should return a 400 status code if the request body is incomplete", async () => {
-      await post("/movie").send(createMoviePayload()).build();
-      const result = await post("/movie").send({ title: "Movie" }).build();
+      await post("/movies").send(createMoviePayload()).build();
+      const result = await post("/movies").send({ title: "Movie" }).build();
       expect(result.status).toBe(400);
       expect(result.body).toEqual(messageCodeMap.get(400));
     });
@@ -52,7 +52,7 @@ describe("MOVIE CONTROLLER", () => {
     let body;
 
     beforeEach(async () => {
-      const { body: movie } = await post("/movie")
+      const { body: movie } = await post("/movies")
         .send(createMoviePayload())
         .build();
       body = createReviewPayload({ reviewedItemId: movie.id });
@@ -61,7 +61,7 @@ describe("MOVIE CONTROLLER", () => {
     it("Should call ReviewService.create once if it is a valid request", async () => {
       const spy = jest.spyOn(ReviewService, "create");
 
-      await post(`/movie/${body.reviewedItemId}/review`)
+      await post(`/movies/${body.reviewedItemId}/review`)
         .withValidRegularUserToken(body.reviewerId)
         .send({ rating: body.rating })
         .build();
@@ -75,7 +75,7 @@ describe("MOVIE CONTROLLER", () => {
     });
 
     it("Should return the json data of the created review with status 200", async () => {
-      const result = await post(`/movie/${body.reviewedItemId}/review`)
+      const result = await post(`/movies/${body.reviewedItemId}/review`)
         .withValidRegularUserToken(body.reviewerId)
         .send({ rating: body.rating })
         .build();
@@ -94,11 +94,11 @@ describe("MOVIE CONTROLLER", () => {
     });
 
     it("Should not allow to create two reviews with same (reviewerId, reviewedItemId) pair", async () => {
-      await post(`/movie/${body.reviewedItemId}/review`)
+      await post(`/movies/${body.reviewedItemId}/review`)
         .withValidRegularUserToken(body.reviewerId)
         .send({ rating: body.rating })
         .build();
-      const result = await post(`/movie/${body.reviewedItemId}/review`)
+      const result = await post(`/movies/${body.reviewedItemId}/review`)
         .withValidRegularUserToken(body.reviewerId)
         .send({ rating: body.rating })
         .build();
@@ -109,7 +109,7 @@ describe("MOVIE CONTROLLER", () => {
 
     it("Should not allow to create a review if the movie does't exist", async () => {
       const noMovieBody = createReviewPayload();
-      const result = await post(`/movie/${noMovieBody.reviewedItemId}/review`)
+      const result = await post(`/movies/${noMovieBody.reviewedItemId}/review`)
         .withValidRegularUserToken(noMovieBody.reviewerId)
         .send({ rating: noMovieBody.rating })
         .build();
@@ -119,7 +119,7 @@ describe("MOVIE CONTROLLER", () => {
     });
 
     it("Should not allow admin users to create reviews", async () => {
-      const result = await post(`/movie/${body.reviewedItemId}/review`)
+      const result = await post(`/movies/${body.reviewedItemId}/review`)
         .withValidAdminToken(body.reviewerId)
         .build();
       expect(result.status).toBe(401);
@@ -136,7 +136,7 @@ describe("MOVIE CONTROLLER", () => {
     it("Should call MovieService.list once if it is a valid request", async () => {
       const spy = jest.spyOn(MovieService, "list");
 
-      await get(`/movie/search?${searchParams.toString()}`).build();
+      await get(`/movies?${searchParams.toString()}`).build();
 
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(createAndFilter(query));
@@ -144,17 +144,17 @@ describe("MOVIE CONTROLLER", () => {
 
     it("Should return the json data of the list with status 200", async () => {
       await Promise.all([
-        post("/movie").send(createMoviePayload({ director, genders })).build(),
-        post("/movie").send(createMoviePayload({ director })).build(),
-        post("/movie").send(createMoviePayload({ genders })).build(),
-        post("/movie").send(createMoviePayload({ director, genders })).build(),
-        post("/movie").send(createMoviePayload()).build(),
+        post("/movies").send(createMoviePayload({ director, genders })).build(),
+        post("/movies").send(createMoviePayload({ director })).build(),
+        post("/movies").send(createMoviePayload({ genders })).build(),
+        post("/movies").send(createMoviePayload({ director, genders })).build(),
+        post("/movies").send(createMoviePayload()).build(),
       ]);
-      const result = await get(
-        `/movie/search?${searchParams.toString()}`
-      ).build();
-
+      const result = await get(`/movies?${searchParams.toString()}`).build();
       expect(result.body).toHaveLength(2);
+
+      const noFilterResult = await get(`/movies`).build();
+      expect(noFilterResult.body).toHaveLength(5);
     });
   });
 
