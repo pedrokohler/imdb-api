@@ -1,13 +1,30 @@
 import { Router } from "express";
 import MovieService from "../services/movie.service";
+import ReviewService from "../services/review.service";
 import messageCodeMap from "./utils/message.codes";
 import safeExecute from "./utils/safe.execute";
 
 const MovieController = Router();
 
 const isAdmin = (req) => {
-  // @todo: implement
-  return req.header("Authorization");
+  // @todo: implement to get this information from JWT token
+  const token = req.header("Authorization");
+  const parsedToken = JSON.parse(token);
+  return parsedToken.isAdmin;
+};
+
+const getUserId = (req) => {
+  // @todo: implement to get ID from JWT token
+  const token = req.header("Authorization");
+  const { userId } = JSON.parse(token);
+  return userId;
+};
+
+const isDuplicateReview = async (reviewerId, reviewedItemId) => {
+  const list = await ReviewService.list({
+    $and: [{ reviewerId }, { reviewedItemId }],
+  });
+  return list.length > 0;
 };
 
 MovieController.post(
@@ -31,13 +48,29 @@ MovieController.post(
 MovieController.post(
   "/:id/review",
   safeExecute(async (req, res) => {
-    const { id } = req.params;
+    const { id: reviewedItemId } = req.params;
+    const reviewerId = getUserId(req);
+    const { rating } = req.body;
 
     if (isAdmin(req)) {
       return res.status(401).json(messageCodeMap.get(401));
     }
 
-    return res.status(200).json({ id });
+    const reviewAlreadyExists = await isDuplicateReview(
+      reviewerId,
+      reviewedItemId
+    );
+    if (reviewAlreadyExists) {
+      return res.status(409).json(messageCodeMap.get(409));
+    }
+
+    const review = await ReviewService.create({
+      reviewedItemId,
+      reviewerId,
+      rating,
+    });
+    const { _id: id, ...result } = review.toJSON();
+    return res.status(200).json({ id, ...result });
   })
 );
 

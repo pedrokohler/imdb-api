@@ -1,6 +1,7 @@
 import Review from "../../models/review.model";
 import {
-  defaultId,
+  defaultReviewerId,
+  defaultReviewedItemId,
   createReviewPayload,
 } from "../test-helpers/review.payload.factory";
 
@@ -10,8 +11,8 @@ describe("REVIEW MODEL", () => {
   it("Should create a review", () => {
     const review = createReview(3);
 
-    expect(review).toHaveProperty("reviewedItemId", defaultId);
-    expect(review).toHaveProperty("reviewerId", defaultId);
+    expect(review).toHaveProperty("reviewedItemId", defaultReviewedItemId);
+    expect(review).toHaveProperty("reviewerId", defaultReviewerId);
     expect(review).toHaveProperty("rating", 3);
   });
 

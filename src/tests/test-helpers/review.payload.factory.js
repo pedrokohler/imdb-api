@@ -1,11 +1,12 @@
 import { Types } from "mongoose";
 
-export const defaultId = Types.ObjectId();
+export const defaultReviewedItemId = Types.ObjectId();
+export const defaultReviewerId = Types.ObjectId();
 export const defaultRating = 3;
 
 export const createReviewPayload = (customizedPayload) => ({
-  reviewedItemId: defaultId,
-  reviewerId: defaultId,
+  reviewedItemId: defaultReviewedItemId,
+  reviewerId: defaultReviewerId,
   rating: defaultRating,
   ...customizedPayload,
 });

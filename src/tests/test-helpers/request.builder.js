@@ -44,16 +44,19 @@ class RequestBuilder {
     return this;
   }
 
-  withValidRegularUserToken() {
+  withValidRegularUserToken(userId) {
     this.request = this.request.set(
       "Authorization",
-      createValidRegularUserToken()
+      createValidRegularUserToken(userId)
     );
     return this;
   }
 
-  withValidAdminToken() {
-    this.request = this.request.set("Authorization", createValidAdminToken());
+  withValidAdminToken(userId) {
+    this.request = this.request.set(
+      "Authorization",
+      createValidAdminToken(userId)
+    );
     return this;
   }
 }
