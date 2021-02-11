@@ -8,7 +8,7 @@ import {
   generateRandomId,
 } from "../test-helpers/review.payload.factory";
 import ReviewService from "../../services/review.service";
-import { createAndFilter } from "../../controllers/utils/filter.factory";
+import { createLogicalAndFilter } from "../../controllers/utils/filter.factory";
 
 beforeAll(async () => {
   await dbHandler.connect();
@@ -163,7 +163,7 @@ describe("MOVIE CONTROLLER", () => {
       await get(`/movies?${searchParams.toString()}`).build();
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(createAndFilter(query));
+      expect(spy).toHaveBeenCalledWith(createLogicalAndFilter(query));
     });
 
     it("Should return the json data of the list with status 200", async () => {

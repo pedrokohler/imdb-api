@@ -1,7 +1,7 @@
 import { Router } from "express";
 import MovieService from "../services/movie.service";
 import ReviewService from "../services/review.service";
-import { createAndFilter } from "./utils/filter.factory";
+import { createLogicalAndFilter } from "./utils/filter.factory";
 import messageCodeMap from "./utils/message.codes";
 import safeExecute from "./utils/safe.execute";
 
@@ -110,7 +110,7 @@ MovieController.get(
   "/",
   safeExecute(async (req, res) => {
     const { query } = req;
-    const filter = createAndFilter(query);
+    const filter = createLogicalAndFilter(query);
     const list = await MovieService.list(filter);
     return res.status(200).json(list);
   })

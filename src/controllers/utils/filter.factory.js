@@ -1,4 +1,4 @@
-export const createAndFilter = (query) =>
+export const createLogicalAndFilter = (query) =>
   Object.entries(query).reduce((acc, [key, value]) => {
     const { $and } = acc;
     const obj = { [key]: value };
@@ -10,5 +10,5 @@ export const createAndFilter = (query) =>
   }, {});
 
 export default {
-  createAndFilter,
+  createLogicalAndFilter,
 };
