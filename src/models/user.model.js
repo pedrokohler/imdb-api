@@ -29,19 +29,19 @@ const UserSchema = new Schema({
 UserSchema.method(
   "encryptPassword",
   async function encryptPassword(plainTextPassword) {
-    const enctyptedPassword = await bcrypt.hash(plainTextPassword, 10);
-    return enctyptedPassword;
+    const encryptedPassword = await bcrypt.hash(plainTextPassword, 10);
+    return encryptedPassword;
   }
 );
 
 UserSchema.method(
   "comparePassword",
   async function comparePassword(plainTextPassword) {
-    const enctyptedPassword = await bcrypt.compare(
+    const encryptedPassword = await bcrypt.compare(
       plainTextPassword,
       this.password
     );
-    return enctyptedPassword;
+    return encryptedPassword;
   }
 );
 

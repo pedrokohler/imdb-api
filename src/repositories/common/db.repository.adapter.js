@@ -1,4 +1,4 @@
-class DbServiceAdapter {
+class DbRepositoryAdapter {
   constructor(model) {
     this.Model = model;
   }
@@ -37,4 +37,4 @@ class DbServiceAdapter {
   }
 }
 
-export default DbServiceAdapter;
+export default DbRepositoryAdapter;

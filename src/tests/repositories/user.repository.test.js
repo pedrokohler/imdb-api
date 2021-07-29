@@ -1,5 +1,5 @@
 import dbHandler from "../test-helpers/db.handler";
-import UserService from "../../services/user.service";
+import UserRepository from "../../repositories/user.repository";
 import {
   defaultPassword,
   createUserPayload,
@@ -16,21 +16,23 @@ afterAll(async () => {
 });
 
 const addUser = async (customizedPayload) => {
-  const user = await UserService.create(createUserPayload(customizedPayload));
+  const user = await UserRepository.create(
+    createUserPayload(customizedPayload)
+  );
   return user;
 };
 
 const findUser = async (id) => {
-  const user = await UserService.find(id);
+  const user = await UserRepository.find(id);
   return user;
 };
 
 const updateUser = async (id, customizedPayload) => {
-  const user = await UserService.update(id, customizedPayload);
+  const user = await UserRepository.update(id, customizedPayload);
   return user;
 };
 
-describe("USER SERVICE", () => {
+describe("USER REPOSITORY", () => {
   it("Should save a user in the database without errors", async () => {
     try {
       await addUser({});

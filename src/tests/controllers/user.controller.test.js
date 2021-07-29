@@ -1,6 +1,6 @@
-import UserService from "../../services/user.service";
+import UserRepository from "../../repositories/user.repository";
 import dbHandler from "../test-helpers/db.handler";
-import messageCodeMap from "../../controllers/utils/message.codes";
+import messageCodeMap from "../../controllers/common/message.codes";
 import {
   createUserPayload,
   createUserPayloadWithoutPassword,
@@ -25,8 +25,8 @@ const deletion = (path) => RequestBuilderInstance.newRequest().delete(path);
 
 describe("USER CONTROLLER", () => {
   describe("CREATE USER", () => {
-    it("Should call UserService.create once if it is a valid user", async () => {
-      const spy = jest.spyOn(UserService, "create");
+    it("Should call UserRepository.create once if it is a valid user", async () => {
+      const spy = jest.spyOn(UserRepository, "create");
       const body = createUserPayload();
       await post("/users").send(body).build();
       expect(spy).toHaveBeenCalledTimes(1);
@@ -59,8 +59,8 @@ describe("USER CONTROLLER", () => {
   });
 
   describe("UPDATE USER", () => {
-    it("Should call UserService.update once if it is a valid user", async () => {
-      const spy = jest.spyOn(UserService, "update");
+    it("Should call UserRepository.update once if it is a valid user", async () => {
+      const spy = jest.spyOn(UserRepository, "update");
       const {
         body: { id },
       } = await post("/users").send(createUserPayload()).build();

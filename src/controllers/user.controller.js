@@ -1,77 +1,62 @@
 import { Router } from "express";
-import UserService from "../services/user.service";
-import messageCodeMap from "./utils/message.codes";
-import safeExecute from "./utils/safe.execute";
+import messageCodeMap from "./common/message.codes";
+import safeExecute from "./common/safe.execute";
+import {
+  createUser,
+  deleteUser,
+  updateUser,
+  validateCreateUserPayload,
+  validateUpdateUserPayload,
+} from "../services/user.service";
+import { createErrorResponse } from "./common/response.factory";
 
 const UserController = Router();
-
-const isDuplicateEmail = async (email) => {
-  const list = await UserService.list({ email });
-  return list.length > 0;
-};
 
 UserController.post(
   "/",
   safeExecute(async (req, res) => {
-    const requiredFields = ["name", "password", "email", "isAdmin"];
-    const isRequiredFieldMissing = requiredFields.some(
-      (field) => !Object.keys(req.body).includes(field)
-    );
+    const { error: validationError } = validateCreateUserPayload(req.body);
 
-    if (isRequiredFieldMissing) {
-      return res.status(400).json(messageCodeMap.get(400));
+    if (validationError) {
+      return createErrorResponse(res, validationError);
     }
 
-    const userAlreadyExists = await isDuplicateEmail(req.body.email);
-    if (userAlreadyExists) {
-      return res.status(409).json(messageCodeMap.get(409));
+    const user = await createUser(req.body);
+
+    if (user.error) {
+      return createErrorResponse(res, user.error);
     }
 
-    const user = await UserService.create(req.body);
-    const { _id: id, password, ...response } = user.toJSON();
-    return res.status(200).json({ id, ...response });
+    return res.status(200).json(user);
   })
 );
 
 UserController.patch(
   "/:id",
   safeExecute(async (req, res) => {
-    const updatableFields = ["name", "password", "email", "isAdmin"];
-    const someFieldIsNotUpdatable = Object.keys(req.body).some(
-      (field) => !updatableFields.includes(field)
-    );
+    const { error: validationError } = validateUpdateUserPayload(req.body);
 
-    if (someFieldIsNotUpdatable) {
-      return res.status(400).json(messageCodeMap.get(400));
+    if (validationError) {
+      return createErrorResponse(res, validationError);
     }
 
-    if (req.body.email) {
-      const userAlreadyExists = await isDuplicateEmail(req.body.email);
-      if (userAlreadyExists) {
-        return res.status(409).json(messageCodeMap.get(409));
-      }
+    const user = await updateUser({ id: req.params.id, ...req.body });
+
+    if (user.error) {
+      return createErrorResponse(res, user.error);
     }
 
-    const { id } = req.params;
-    const user = await UserService.update(id, req.body);
-
-    if (user === null) {
-      return res.status(404).json(messageCodeMap.get(404));
-    }
-
-    const { _id, password, ...response } = user.toJSON();
-    return res.status(200).json({ ...response, id });
+    return res.status(200).json(user);
   })
 );
 
 UserController.delete(
   "/:id",
   safeExecute(async (req, res) => {
-    const { id } = req.params;
-    const user = await UserService.update(id, { isActive: false });
+    const { error } = await deleteUser(req.params.id);
 
-    if (user === null) {
-      return res.status(404).json(messageCodeMap.get(404));
+    if (error) {
+      return createErrorResponse(res, error);
     }
 
     return res.status(200).json(messageCodeMap.get(200));

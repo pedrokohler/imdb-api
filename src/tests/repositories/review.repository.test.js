@@ -1,5 +1,5 @@
 import dbHandler from "../test-helpers/db.handler";
-import ReviewService from "../../services/review.service";
+import ReviewRepository from "../../repositories/review.repository";
 import {
   createReviewPayload,
   generateRandomId,
@@ -16,10 +16,10 @@ afterAll(async () => {
 });
 
 const addReview = async (customizedPayload) => {
-  await ReviewService.create(createReviewPayload(customizedPayload));
+  await ReviewRepository.create(createReviewPayload(customizedPayload));
 };
 
-describe("REVIEW SERVICE", () => {
+describe("REVIEW REPOSITORY", () => {
   it("Should save a review in the database without errors", async () => {
     try {
       await addReview({});
@@ -35,7 +35,7 @@ describe("REVIEW SERVICE", () => {
     await addReview({});
     await addReview({ reviewedItemId: otherId });
 
-    const reviews = await ReviewService.list({ reviewedItemId: otherId });
+    const reviews = await ReviewRepository.list({ reviewedItemId: otherId });
     expect(reviews).toHaveLength(2);
   });
 });

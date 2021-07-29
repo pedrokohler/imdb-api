@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import tokenHandler from "../../controllers/utils/token.handler";
+import tokenHandler from "../../services/common/token.handler";
 
 export const createValidAdminToken = async (id) => {
   const token = await tokenHandler.createToken({

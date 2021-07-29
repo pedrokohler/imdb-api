@@ -1,5 +1,5 @@
-import messageCodeMap from "../../controllers/utils/message.codes";
-import tokenHandler from "../../controllers/utils/token.handler";
+import messageCodeMap from "../../controllers/common/message.codes";
+import tokenHandler from "../../services/common/token.handler";
 import dbHandler from "../test-helpers/db.handler";
 import RequestBuilder from "../test-helpers/request.builder";
 import { createUserPayload } from "../test-helpers/user.payload.factory";
@@ -63,7 +63,7 @@ describe("LOGIN CONTROLLER", () => {
     expect(result.body).toEqual(messageCodeMap.get(404));
   });
 
-  it("Should send a 401 error when user passowrd is incorrect", async () => {
+  it("Should send a 401 error when user password is incorrect", async () => {
     const body = {
       email: user.email,
       password: "wrong password",

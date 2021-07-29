@@ -1,8 +1,7 @@
 import { Router } from "express";
-import UserService from "../services/user.service";
-import messageCodeMap from "./utils/message.codes";
-import safeExecute from "./utils/safe.execute";
-import tokenHandler from "./utils/token.handler";
+import { login } from "../services/auth.service";
+import { createErrorResponse } from "./common/response.factory";
+import safeExecute from "./common/safe.execute";
 
 const LoginController = Router();
 
@@ -10,21 +9,13 @@ LoginController.post(
   "/",
   safeExecute(async (req, res) => {
     const { email, password } = req.body;
-    const userList = await UserService.list({ email });
-    const user = userList[0];
+    const token = await login(email, password);
 
-    if (!user) {
-      return res.status(404).send(messageCodeMap.get(404));
+    if (token.error) {
+      return createErrorResponse(res, token.error);
     }
 
-    const isValidPassword = await user.comparePassword(password);
-    if (!user.isActive || !isValidPassword) {
-      return res.status(401).send(messageCodeMap.get(401));
-    }
-
-    const token = await tokenHandler.createToken(user);
-
-    return res.status(200).json({ token });
+    return res.status(200).json({ email, token });
   })
 );
 

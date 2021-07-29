@@ -1,14 +1,14 @@
-import MovieService from "../../services/movie.service";
+import MovieRepository from "../../repositories/movie.repository";
 import dbHandler from "../test-helpers/db.handler";
-import messageCodeMap from "../../controllers/utils/message.codes";
+import messageCodeMap from "../../controllers/common/message.codes";
 import { createMoviePayload } from "../test-helpers/movie.payload.factory";
 import RequestBuilder from "../test-helpers/request.builder";
 import {
   createReviewPayload,
   generateRandomId,
 } from "../test-helpers/review.payload.factory";
-import ReviewService from "../../services/review.service";
-import { createLogicalAndFilter } from "../../controllers/utils/filter.factory";
+import ReviewRepository from "../../repositories/review.repository";
+import { createLogicalAndFilter } from "../../controllers/common/filter.factory";
 
 beforeAll(async () => {
   await dbHandler.connect();
@@ -27,8 +27,8 @@ const get = (path) => RequestBuilderInstance.newRequest().get(path);
 
 describe("MOVIE CONTROLLER", () => {
   describe("CREATE MOVIE", () => {
-    it("Should call MovieService.create once if it is a valid movie", async () => {
-      const spy = jest.spyOn(MovieService, "create");
+    it("Should call MovieRepository.create once if it is a valid movie", async () => {
+      const spy = jest.spyOn(MovieRepository, "create");
       const body = createMoviePayload();
       await post("/movies")
         .withValidAdminToken()
@@ -80,8 +80,8 @@ describe("MOVIE CONTROLLER", () => {
       body = createReviewPayload({ reviewedItemId: movie.id });
     });
 
-    it("Should call ReviewService.create once if it is a valid request", async () => {
-      const spy = jest.spyOn(ReviewService, "create");
+    it("Should call ReviewRepository.create once if it is a valid request", async () => {
+      const spy = jest.spyOn(ReviewRepository, "create");
 
       await post(`/movies/${body.reviewedItemId}/review`)
         .withValidRegularUserToken(body.reviewerId)
@@ -150,8 +150,8 @@ describe("MOVIE CONTROLLER", () => {
     const query = { director, genders };
     const searchParams = new URLSearchParams(query);
 
-    it("Should call MovieService.list once if it is a valid request", async () => {
-      const spy = jest.spyOn(MovieService, "list");
+    it("Should call MovieRepository.list once if it is a valid request", async () => {
+      const spy = jest.spyOn(MovieRepository, "list");
 
       await get(`/movies?${searchParams.toString()}`).build();
 
@@ -197,8 +197,8 @@ describe("MOVIE CONTROLLER", () => {
         .then((self) => self.send(body).build());
       movie = result.body;
     });
-    it("Should call MovieService.get once", async () => {
-      const spy = jest.spyOn(MovieService, "find");
+    it("Should call MovieRepository.get once", async () => {
+      const spy = jest.spyOn(MovieRepository, "find");
       const id = "id";
 
       await get(`/movies/${id}`).build();
